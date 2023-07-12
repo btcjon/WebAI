@@ -1,11 +1,9 @@
 from dotenv import load_dotenv
 load_dotenv()  # take environment variables from .env.
 
-import openai
 import argparse
 import json
 import asyncio
-import pprint
 from BardAPI.bardapi.core import Bard
 from EdgeGPT.src.EdgeGPT.EdgeGPT import Chatbot, ConversationStyle
 from OpenAI_API.core import interact_with_openai
@@ -23,8 +21,7 @@ async def chat_with_bard():
         if prompt.lower() in ["quit", "exit"]:
             break
         response = await loop.run_in_executor(executor, bard.get_answer, prompt)
-        message = response['content']  # Extract the desired message
-        print(f"Bard: {message}")  # Print the message
+        print(f"Bard: {response}")
 
 async def chat_with_bing():
     with open('cookies.json', 'r') as f:
@@ -36,26 +33,17 @@ async def chat_with_bing():
             await bing.close()
             break
         response = await bing.ask(prompt, conversation_style=ConversationStyle.creative)
-        message = response['item']['messages'][-1]['text']  # Extract the desired message
-        print(message)
+        print(f"Raw output: {response}")  # Debug line
+        print(f"Bing: {response}")
 
 async def chat_with_openai():
+    model = "gpt-3.5-turbo"  # The default model
     while True:
         prompt = input("You: ")
         if prompt.lower() in ["quit", "exit"]:
             break
-        response = await interact_with_openai(prompt, "gpt-3.5-turbo")
+        response = await interact_with_openai(prompt, model)
         print(f"OpenAI: {response}")
-
-async def interact_with_openai(prompt, model):
-    response = openai.ChatCompletion.create(
-        model=model,
-        messages=[
-            {"role": "system", "content": "You are a helpful assistant."},
-            {"role": "user", "content": prompt},
-        ]
-    )
-    return response.choices[0].message['content']
 
 async def main():
     parser = argparse.ArgumentParser(description='Interact with Bard, Bing, ChatGPT, and OpenAI APIs.')
@@ -66,16 +54,16 @@ async def main():
     args = parser.parse_args()
 
     if args.bard:
-        await chat_with_bard()
+        await chat_with_bard()  # New code for Bard interaction
 
     if args.bing:
-        await chat_with_bing()
+        await chat_with_bing()  # New code for Bing interaction
 
     if args.chatgpt:
         pass  # This part can be filled later as per user's requirement
 
     if args.openai:
-        await chat_with_openai()
+        await chat_with_openai()  # New code for OpenAI interaction
 
 if __name__ == "__main__":
     asyncio.run(main())
