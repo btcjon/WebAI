@@ -10,9 +10,6 @@ from EdgeGPT.src.EdgeGPT.EdgeGPT import Chatbot, ConversationStyle
 from OpenAI_API.core import interact_with_openai
 from concurrent.futures import ThreadPoolExecutor
 from tools.file_system_tool import FileSystemTool
-from tools.webscraper_tool import WebScraperTool
-from tools.website_crawler_tool import WebsiteCrawlerTool
-from tools.s3_tool import S3Tool
 from llm import LLM
 from lang_chain import LangChain
 from tool_chain import ToolChain
@@ -63,12 +60,8 @@ async def main():
 
     langchain = LangChain([bard_llm, bing_llm, openai_llm_turbo, openai_llm_turbo_16k, openai_llm_4])
 
-    s3_tool = S3Tool('webaistorage')  # Create S3Tool instance
-    file_tool = FileSystemTool("File Tool", s3_tool)  # Pass S3Tool instance to FileSystemTool
-    webscraper_tool = WebScraperTool("Web Scraper")
-    website_crawler_tool = WebsiteCrawlerTool("Website Crawler")
-    
-    toolchain = ToolChain([file_tool, webscraper_tool, website_crawler_tool, s3_tool])  
+    file_tool = FileSystemTool("File Tool")
+    toolchain = ToolChain([file_tool])
 
     # Initialize the CommandParser
     command_parser = CommandParser(toolchain)
@@ -83,9 +76,8 @@ async def main():
             if prompt.lower() == "!help":
                 CommandParser.list_commands(toolchain)
             else:
-                prompt = command_parser.parse(prompt[1:])
-
-        if prompt is not None:
+                command_parser.parse(prompt[1:])
+        else:
             if args.bard or (default_llm == 'Bard'):
                 await langchain.process(prompt, 'Bard')
             if args.bing or (default_llm == 'Bing'):
