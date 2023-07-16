@@ -1,0 +1,22 @@
+
+# 2023-07-16 09:38:26.254140
++we are trying to test memory for our app by saving and getting from supabase. please run test_memory_manager.py for saving and getting from supabase
+
+# 2023-07-16 09:39:19.780172
++python test_memory_manager.py
+
+# 2023-07-16 09:40:35.232720
++"python test_memory_manager.py
++Traceback (most recent call last):
++  File "/Users/jonbennett/Dropbox/Coding/webAI/test_memory_manager.py", line 2, in <module>
++    from postgrest_py import PostgrestClient
++ModuleNotFoundError: No module named 'postgrest_py'"
+
+# 2023-07-16 09:41:46.671500
++help fix ModuleNotFoundError: No module named 'postgrest_py'
+
+# 2023-07-16 09:52:49.399338
++implement the following "Long-Term Memory (Supabase Database): This will be a Supabase database that stores past conversations. Each record in the database will include a user ID, session ID, timestamp, user message, and AI response. This allows the retrieval of past interactions for a user or a particular session, which is useful for maintaining context across multiple sessions and providing a personalized user experience. The user can access historical data using the user_id and session_id. We will have functions to store and retrieve data from this database."
+
+# 2023-07-16 09:53:41.276315
++how can we test it?
