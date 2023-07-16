@@ -14,9 +14,9 @@ class CommandParser:
 
         # Retrieve the specific command for the tool
         tool_method = None
-        for name, (description, method) in tool.commands.items():
+        for name, (description, method_name) in tool.commands.items():
             if name == command_name:
-                tool_method = method
+                tool_method = getattr(tool, method_name, None)
                 break
 
         if not tool_method:

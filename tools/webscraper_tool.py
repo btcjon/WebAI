@@ -1,7 +1,7 @@
 import os
 import requests
 from bs4 import BeautifulSoup
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urlsplit
 
 class WebScraperTool:
     def __init__(self, name):
@@ -10,7 +10,8 @@ class WebScraperTool:
         self.scraped_dir = os.path.join(self.workspace_dir, "scraped")
         self.urls_file = os.path.join(self.workspace_dir, "urls.txt")
         self.commands = {
-            "scrape": ("Scrapes a webpage and saves the content to a file. Usage: scrape <url>", self.scrape)
+            "scrape": ("Scrapes a webpage and saves the content to a file. Usage: scrape <url>", "scrape"),
+            "scrape_file": ("Scrapes all webpages listed in a file. Usage: scrape_file <file>", "scrape_file")
         }
 
         # Create the workspace and scraped directories if they don't exist
@@ -34,6 +35,22 @@ class WebScraperTool:
 
         # Return the path to the output file
         return output_file
+
+    def scrape_file(self, file):
+        with open(file, 'r') as f:
+            lines = f.readlines()
+        
+        for line in lines:
+            url = line.strip()  # Remove any leading/trailing whitespace or newlines
+            # Check if the line is a valid URL
+            try:
+                result = urlsplit(url)
+                if all([result.scheme, result.netloc]):
+                    self.scrape(url)
+                else:
+                    print(f"Invalid URL: {url}")
+            except Exception as e:
+                print(f"Error occurred while processing URL: {url}. Error: {e}")
 
     def _get_output_file(self, url):
         # Parse the URL to get the domain and path

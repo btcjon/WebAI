@@ -30,6 +30,17 @@ The application provides a command-line interface for interacting with the vario
 ## Usage
 Users interact with the application through a command-line interface. They can specify which LLM to use with command-line flags (e.g., --bing for Bing, --bard for Bard). To send a request to an LLM, users simply type their query into the command line.
 
+## Memory Design (current work-in-progress)
+
+Short-Term Memory (Buffer Window): This part of the memory will hold the last N messages in the ongoing conversation. It's typically implemented as a queue or list data structure that can efficiently add new messages and remove old ones when the limit (N) is reached. Short-term memory helps the model to remember and respond to immediate context in the conversation.
+
+Long-Term Memory (Supabase Database): This will be a Supabase database that stores past conversations. Each record in the database will include a user ID, session ID, timestamp, user message, and AI response. This allows the retrieval of past interactions for a user or a particular session, which is useful for maintaining context across multiple sessions and providing a personalized user experience. The user can access historical data using the user_id and session_id. We will have functions to store and retrieve data from this database.
+
+Vector Storage (Pinecone): This is used for efficient storage and retrieval of memory. For each significant entity or concept, we'll generate a vector representation and store it in Pinecone. When we need to retrieve information, we can generate a vector for the current context and use it to retrieve the most similar vectors (and their associated information) from Pinecone. This can be especially helpful when dealing with large datasets or complex concepts.
+
+Entity Summary Memory: This can be used to store summarized information about different entities that the AI has interacted with. This can help the AI provide accurate and relevant responses when those entities are mentioned in future interactions.
+
+
 ## Improvements to be made
 - add conversation memory
 - add vector storage
