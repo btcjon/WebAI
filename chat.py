@@ -8,7 +8,7 @@ import asyncio
 import sys
 import io
 import re
-from BardAPI.bardapi.core import Bard
+from bardapi import Bard
 from EdgeGPT.src.EdgeGPT.EdgeGPT import Chatbot, ConversationStyle
 from OpenAI_API.core import interact_with_openai
 from concurrent.futures import ThreadPoolExecutor
