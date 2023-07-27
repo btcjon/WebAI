@@ -5,9 +5,6 @@ import openai
 import argparse
 import json
 import asyncio
-import sys
-import io
-import re
 from BardAPI.bardapi.core import Bard
 from EdgeGPT.src.EdgeGPT.EdgeGPT import Chatbot, ConversationStyle
 from OpenAI_API.core import interact_with_openai
@@ -20,19 +17,6 @@ from llm import LLM
 from lang_chain import LangChain
 from tool_chain import ToolChain
 from command_parser import CommandParser
-
-from collections import deque
-
-class ShortTermMemory:
-    def __init__(self, size):
-        self.size = size
-        self.memory = deque(maxlen=size)
-
-    def add_message(self, message):
-        self.memory.append(message)
-
-    def get_messages(self):
-        return list(self.memory)
 
 import logging  # import logging module
 
@@ -89,17 +73,10 @@ async def main():
     # Initialize the CommandParser
     command_parser = CommandParser(toolchain)
 
-    # Instantiate the ShortTermMemory class
-    stm = ShortTermMemory(5)
-
     while True:
         prompt = input("You: ")
         if prompt.lower() in ["quit", "exit"]:
             break
-
-        # Add the user's input to the memory
-        stm.add_message("You: " + prompt)
-        print("Current Memory: ", stm.get_messages())  # Print the current state of the memory
 
         # Check if the prompt is a command
         if prompt.lower().startswith("!"):
@@ -109,34 +86,16 @@ async def main():
                 prompt = command_parser.parse(prompt[1:])
 
         if prompt is not None:
-            # Capture the standard output
-            old_stdout = sys.stdout
-            new_stdout = io.StringIO()
-            sys.stdout = new_stdout
-
             if args.bard or (default_llm == 'Bard'):
-                response = await langchain.process(prompt, 'Bard')
+                await langchain.process(prompt, 'Bard')
             if args.bing or (default_llm == 'Bing'):
-                response = await langchain.process(prompt, 'Bing')
+                await langchain.process(prompt, 'Bing')
             if args.openai or (default_llm == 'gpt-3.5-turbo'):
-                response = await langchain.process(prompt, 'gpt-3.5-turbo')
+                await langchain.process(prompt, 'gpt-3.5-turbo')
             if args.openai16k or (default_llm == 'gpt-3.5-turbo-16k'):
-                response = await langchain.process(prompt, 'gpt-3.5-turbo-16k')
+                await langchain.process(prompt, 'gpt-3.5-turbo-16k')
             if args.gpt4 or (default_llm == 'gpt-4'):
-                response = await langchain.process(prompt, 'gpt-4')
-
-            # Get the printed response
-            printed_response = new_stdout.getvalue().strip()
-            sys.stdout = old_stdout
-
-            # Add the printed response to the memory
-            if printed_response:
-                # Remove escape characters and format the response
-                formatted_response = re.sub(r'\\n', '\n', printed_response)
-                formatted_response = re.sub(r'\\\'', '\'', formatted_response)
-                formatted_response = re.sub(r'\\\"', '\"', formatted_response)
-                stm.add_message("Bot: " + formatted_response)
-                print("Current Memory: ", stm.get_messages())  # Print the current state of the memory
+                await langchain.process(prompt, 'gpt-4')
 
 if __name__ == "__main__":
     asyncio.run(main())

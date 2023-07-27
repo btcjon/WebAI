@@ -1,0 +1,17 @@
+argparse
+asyncio
+aiohttp
+boto3
+beautifulsoup4
+colorama
+deep_translator
+python-dotenv
+google-cloud-translate
+httpx
+log2d
+openai
+postgrest-py
+prompt_toolkit
+pytest
+requests
+setuptools
